@@ -38,8 +38,8 @@ public class MineralLabler {
 	private PicturePanel picturePanel;
 	private JDialog pictureDialog;
 	
-	private File inDirectory;// = new File("/home/arjvik/Pictures/MineralTrainingDataSmall");
-	private File outDirectory;// = new File("/home/arjvik/Documents/MineralTrainingDataOutput");
+	private File inDirectory;
+	private File outDirectory;
 	
 	private int picNumber = -1;
 	private List<Image> resizedPictures;
