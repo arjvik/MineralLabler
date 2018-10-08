@@ -18,45 +18,55 @@ import javax.imageio.ImageIO;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
-public class Main {
-	
-	private static final boolean FAST_MODE = true;
+public class MineralLabler {
 	
 	private JFrame frame;
 	private JFileChooser directoryChooser;
 	private JButton loadButton, nextButton, delButton;
 	private JButton inDirButton, outDirButton;
 	private JLabel inDirLabel, outDirLabel;
+	private JCheckBox fastMode;
 	private PicturePanel picturePanel;
 	private JDialog pictureDialog;
 	
-	private File inDirectory = new File("/home/arjvik/Pictures/MineralTrainingDataSmall");
-	private File outDirectory = new File("/home/arjvik/Documents/MineralTrainingDataOutput");
+	private File inDirectory;// = new File("/home/arjvik/Pictures/MineralTrainingDataSmall");
+	private File outDirectory;// = new File("/home/arjvik/Documents/MineralTrainingDataOutput");
 	
 	private int picNumber = -1;
 	private List<Image> resizedPictures;
 	private List<Pair> outputs;
 	
+	private static boolean DEBUG = true;
+	/*init*/ {
+		if(DEBUG) {
+			inDirectory = new File("/home/arjvik/Pictures/MineralTrainingDataSmall");
+			outDirectory = new File("/home/arjvik/Documents/MineralTrainingDataOutput");
+		}
+	}
+	
+	
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
-		new Main();
+		SwingUtilities.invokeLater(MineralLabler::new);
 	}
 
 	/**
 	 * Create the application.
 	 */
-	public Main() {
+	public MineralLabler() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 340, 300);
+		frame.setBounds(100, 100, 340, 340);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.PAGE_AXIS));
 
@@ -112,6 +122,14 @@ public class Main {
 		delButton.setEnabled(false);
 		delButton.addActionListener(e -> deletePicture());
 		add(delButton);
+		
+		add(Box.createVerticalGlue());
+		add(new JLabel(" ")); //padding
+		
+		fastMode = new JCheckBox("Fast classifying - use with caution");
+		fastMode.setSelected(false);
+		fastMode.setAlignmentX(Component.CENTER_ALIGNMENT);
+		add(fastMode);
 		
 		add(Box.createVerticalGlue());
 		
@@ -266,7 +284,7 @@ public class Main {
 			picturePanel.setCoordinates(p);
 			picturePanel.repaint();
 			nextButton.setEnabled(true);
-			if(FAST_MODE)
+			if(fastMode.isSelected())
 				nextPicture();
 		}
 		@Override public void mouseEntered(MouseEvent e) {}
@@ -280,14 +298,14 @@ public class Main {
 
 		private static final long serialVersionUID = 1L;
 		private Image image;
-		private Main.Pair coordinates;
+		private MineralLabler.Pair coordinates;
 		
 		public void setImage(Image image) {
 			this.image = image;
 			this.coordinates = null;
 		}
 		
-		public void setCoordinates(Main.Pair coordinates) {
+		public void setCoordinates(MineralLabler.Pair coordinates) {
 			this.coordinates = coordinates;
 		}
 		
