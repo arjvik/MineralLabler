@@ -147,10 +147,11 @@ public class MineralLabler {
 		File tmpInDirectory = directoryChooser.getSelectedFile();
 		if(tmpInDirectory != null)
 			inDirectory = tmpInDirectory;
-		if(inDirectory != null)
+		if(inDirectory != null) {
 			inDirLabel.setText(inDirectory.getAbsolutePath());
-		if(outDirectory != null) 
-			loadButton.setEnabled(true);
+			if(outDirectory != null) 
+				loadButton.setEnabled(true);
+		}
 	}
 
 	private void chooseOutDirectory() {
@@ -160,10 +161,11 @@ public class MineralLabler {
 		File tmpOutDirectory = directoryChooser.getSelectedFile();
 		if(tmpOutDirectory != null)
 			outDirectory = tmpOutDirectory;
-		if(outDirectory != null)
+		if(outDirectory != null) {
 			outDirLabel.setText(outDirectory.getAbsolutePath());
-		if(inDirectory != null) 
-			loadButton.setEnabled(true);
+			if(inDirectory != null) 
+				loadButton.setEnabled(true);
+		}
 	}
 
 	private void loadPictures() {
