@@ -1,6 +1,4 @@
-import java.awt.Color;
 import java.awt.Component;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.event.MouseEvent;
@@ -24,7 +22,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 public class MineralLabler {
@@ -296,37 +293,7 @@ public class MineralLabler {
 	
 	}
 	
-	class PicturePanel extends JPanel {
+	
 
-		private static final long serialVersionUID = 1L;
-		private Image image;
-		private MineralLabler.Pair coordinates;
-		
-		public void setImage(Image image) {
-			this.image = image;
-			this.coordinates = null;
-		}
-		
-		public void setCoordinates(MineralLabler.Pair coordinates) {
-			this.coordinates = coordinates;
-		}
-		
-		@Override
-		protected void paintComponent(Graphics g) {
-			super.paintComponent(g);
-			g.drawImage(image, 0, 0, 640, 480, null);
-			if(coordinates != null) {
-				g.setColor(Color.RED);
-				g.fillOval(coordinates.getX(), coordinates.getY(), 10, 10);
-			}
-		}
-		
-	}
-
-	public class Pair {
-		private int x, y;
-		public Pair(int x, int y) {	this.x = x; this.y = y;	}
-		public int getX() { return x; }
-		public int getY() {	return y; }
-	}
+	
 }
