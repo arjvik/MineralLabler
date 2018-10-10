@@ -9,6 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,19 +38,11 @@ public class MineralLabler {
 	
 	private File inDirectory;
 	private File outDirectory;
+	private List<File> inputPictures;
 	
 	private int picNumber = -1;
-	private List<Image> resizedPictures;
-	private List<Pair> outputs;
-	
-	private static boolean DEBUG = true;
-	/*init*/ {
-		if(DEBUG) {
-			inDirectory = new File("/home/arjvik/Pictures/MineralTrainingDataSmall");
-			outDirectory = new File("/home/arjvik/Documents/MineralTrainingDataOutput");
-		}
-	}
-	
+	private Image resizedPicture;
+	private Pair output;
 	
 	/**
 	 * Launch the application.
@@ -160,94 +153,92 @@ public class MineralLabler {
 			outDirectory = tmpOutDirectory;
 		if(outDirectory != null) {
 			outDirLabel.setText(outDirectory.getAbsolutePath());
-			if(inDirectory != null) 
+			if(inDirectory != null)
 				loadButton.setEnabled(true);
 		}
 	}
 
 	private void loadPictures() {
+		inDirButton.setEnabled(false);
+		outDirButton.setEnabled(false);
+		loadButton.setEnabled(false);
+		delButton.setEnabled(true);
+		inputPictures = new ArrayList<>(Arrays.asList(
+										inDirectory.listFiles((f, s) -> s.endsWith(".png") ||
+																		s.endsWith(".jpg") ||
+																		s.endsWith(".bmp") ||
+																		s.endsWith(".gif"))));
+		picNumber = 0;
+		pictureDialog = new JDialog(frame, "Select Gold Mineral", false);
+		pictureDialog.setBounds(500,100,680,520);
+		
+		picturePanel = new PicturePanel();
+		picturePanel.addMouseListener(new PictureClickListener());
+		pictureDialog.add(picturePanel);
+		
+		pictureDialog.setVisible(true);
+		drawPicture();
+	}
+
+	private void drawPicture() {
 		try {
-			inDirButton.setEnabled(false);
-			outDirButton.setEnabled(false);
-			loadButton.setEnabled(false);
-			delButton.setEnabled(true);
-			resizedPictures = new ArrayList<>();
-			outputs = new ArrayList<>();
-			File[] pictures = inDirectory.listFiles((f, s) -> s.endsWith(".png") || s.endsWith(".jpg") || s.endsWith(".bmp") || s.endsWith(".gif"));
-			for(File picture : pictures) {
-				Image originalPicture =  ImageIO.read(picture);
-		        Image resizedPicture = originalPicture.getScaledInstance(320, 240, Image.SCALE_FAST);
-		        resizedPictures.add(resizedPicture);
-		        outputs.add(null);
-			}
-			picNumber = 0;
-			pictureDialog = new JDialog(frame, "Select Gold Mineral", false);
-			pictureDialog.setBounds(500,100,680,520);
-			
-			picturePanel = new PicturePanel();
-			picturePanel.addMouseListener(new PictureClickListener());
-			pictureDialog.add(picturePanel);
-			
-			pictureDialog.setVisible(true);
-			drawPicture();
+			Image originalPicture =  ImageIO.read(inputPictures.get(picNumber));
+	    	resizedPicture = originalPicture.getScaledInstance(320, 240, Image.SCALE_FAST);
+	    	output = null;
+	    	picturePanel.setImage(resizedPicture);
+			picturePanel.repaint();
 		} catch (IOException e) {
 			errorAndExit(e);
 		}
 	}
 
-	private void drawPicture() {
-		picturePanel.setImage(resizedPictures.get(picNumber));
-		picturePanel.repaint();
-	}
-
 	private void nextPicture() {
 		nextButton.setEnabled(false);
+		savePicture();
 		picNumber++;
-		if(picNumber == resizedPictures.size())
-			savePictures();
-		else
+		if(picNumber == inputPictures.size()) {
+			JOptionPane.showMessageDialog(frame, "Successfully labled all pictures");
+			System.exit(0);
+		} else {
 			drawPicture();
+		}
 	}
 	
 	private void deletePicture() {
 		nextButton.setEnabled(false);
-		resizedPictures.remove(picNumber);
-		outputs.remove(picNumber);
+		inputPictures.remove(picNumber);
+		output = null;
 		drawPicture();
 	}
 	
-	private void savePictures() {
+	private void savePicture() {
 		try {
-			for (int i = 0; i < resizedPictures.size(); i++) {
-				BufferedImage image = toBufferedImage(resizedPictures.get(i));
-				String fileName = "LabledMineral-" + UUID.randomUUID().toString() + ".txt";
-				try (PrintWriter writer = new PrintWriter(new FileWriter(new File(outDirectory, fileName)))) {
-					writer.print(outputs.get(i).getX());
-					writer.print(',');
-					writer.print(outputs.get(i).getY());
-					writer.println(',');
-					for (int r = 0; r < 240; r++) {
-						for (int c = 0; c < 320; c++) {
-							int pixel = image.getRGB(c, r);
-						    int red = (pixel >> 16) & 0xff;
-						    int green = (pixel >> 8) & 0xff;
-						    int blue = (pixel) & 0xff;
-						    writer.print(red);
-						    writer.print(',');
-						    writer.print(green);
-						    writer.print(',');
-						    writer.print(blue);
-						    writer.print(',');
-						}
-						writer.println();
+			BufferedImage image = toBufferedImage(resizedPicture);
+			String fileName = "LabledMineral-" + UUID.randomUUID().toString() + ".txt";
+			try (PrintWriter writer = new PrintWriter(new FileWriter(new File(outDirectory, fileName)))) {
+				writer.print(output.getX());
+				writer.print(',');
+				writer.print(output.getY());
+				writer.println(',');
+				for (int r = 0; r < 240; r++) {
+					for (int c = 0; c < 320; c++) {
+						int pixel = image.getRGB(c, r);
+					    int red = (pixel >> 16) & 0xff;
+					    int green = (pixel >> 8) & 0xff;
+					    int blue = (pixel) & 0xff;
+					    writer.print(red);
+					    writer.print(',');
+					    writer.print(green);
+					    writer.print(',');
+					    writer.print(blue);
+					    writer.print(',');
 					}
+					writer.println();
 				}
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			errorAndExit(e);
 		}
-		JOptionPane.showMessageDialog(frame, "Successfully saved all pictures");
-		System.exit(0);
 	}
 	
 	// https://stackoverflow.com/questions/13605248/java-converting-image-to-bufferedimage
@@ -278,9 +269,8 @@ public class MineralLabler {
 	
 		@Override
 		public void mouseClicked(MouseEvent e) {
-			Pair p = new Pair(e.getX(), e.getY());
-			outputs.set(picNumber, p);
-			picturePanel.setCoordinates(p);
+			output = new Pair(e.getX(), e.getY());
+			picturePanel.setCoordinates(output);
 			picturePanel.repaint();
 			nextButton.setEnabled(true);
 			if(fastMode.isSelected())
@@ -292,8 +282,5 @@ public class MineralLabler {
 		@Override public void mouseReleased(MouseEvent e) {}
 	
 	}
-	
-	
-
 	
 }

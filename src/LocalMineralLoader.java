@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-import javax.imageio.ImageIO;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -30,14 +29,6 @@ public class LocalMineralLoader {
 	private File[] pictures;
 	
 	private int picNumber = -1;
-	
-	private static boolean DEBUG = true;
-	/*init*/ {
-		if(DEBUG) {
-			inDirectory = new File("/home/arjvik/Documents/MineralTrainingDataOutput");
-		}
-	}
-	
 	
 	/**
 	 * Launch the application.
