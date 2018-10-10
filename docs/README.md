@@ -1,5 +1,5 @@
 # MineralLabler
-A tool for labling training data for training a CNN for this year's FTC game.
+A tool for labling training data for training a CNN for this year's FTC game. [Download latest version](https://github.com/arjvik/MineralLabler/releases/download/v1.0/MineralLabler.jar)
 
 ## Getting Started
  1. Take photos of minerals. Take as many photos as you can! The more, the merrier.
